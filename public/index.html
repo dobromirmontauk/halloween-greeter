@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Banjo Porch</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="banner" id="banner" data-tone="unreachable">
+  <div class="banner-main">
+    <div class="state" id="state-label" role="status" aria-live="polite"><span class="dot" id="state-dot" aria-hidden="true"></span><span id="state-text">CONNECTING</span><span class="state-group" id="state-group" hidden></span><span class="state-detail" id="state-detail"></span><span class="rec-audio" id="rec-audio" hidden>recording audio</span></div>
+    <ol class="steps" id="steps" hidden aria-label="Live phase"></ol>
+    <div class="clock" id="state-clock" title="Elapsed / session limit"></div>
+  </div>
+  <div class="recent" id="recent" aria-label="Recent states"></div>
+  <div class="banner-meta">
+    <span class="kv"><span class="k">Greeter</span><b id="meta-greeter">–</b></span>
+    <span class="kv"><span class="k">Mode</span><b id="meta-mode">–</b></span>
+    <span class="kv"><span class="k">Trigger</span><b id="meta-trigger">none</b></span>
+    <span class="kv"><span class="k">People</span><b id="meta-people">–</b></span>
+  </div>
+  <div class="banner-actions">
+    <div class="switch" id="mode-switch" role="radiogroup" aria-label="App mode">
+      <button type="button" role="radio" data-mode="OFF" aria-checked="false">Off</button>
+      <button type="button" role="radio" data-mode="ON" aria-checked="false">On</button>
+      <button type="button" role="radio" data-mode="DATA_CAPTURE" aria-checked="false">Data capture</button>
+    </div>
+    <span class="heckle"><label for="heckling">Heckling</label> <span class="help" title="Call out to people on the sidewalk. Off: greet only when someone walks up the path.">(?)</span> <button type="button" id="heckling" role="switch" class="btn small" aria-checked="false">Off</button></span>
+    <span class="heckle" id="scream-wrap"><span>Scream</span> <span class="help" title="First time someone shows up on the sidewalk: a TTS scream, a laugh, then &quot;Happy Halloween! Come get some candy!&quot;. Once per group (re-arms when the yard is empty), only while mode is ON. SCREAM=off disables.">(?)</span> <span id="scream-status" class="muted">–</span></span>
+    <button type="button" id="mute" class="btn">Mute</button>
+    <button type="button" id="end-session" class="btn danger">Stop session</button>
+    <span class="sched" id="sched" hidden><span id="sched-text"></span><button type="button" id="resume-schedule" class="btn small" hidden>Resume schedule</button></span>
+    <span id="action-error" class="action-error" role="alert" hidden></span>
+  </div>
+  <div class="daybar" id="daybar" hidden aria-label="Daily schedule (PT)"></div>
+  <div class="costs" id="costs" hidden>
+    <button type="button" class="cost-strip" id="cost-strip" aria-expanded="false" aria-controls="cost-detail"></button>
+    <div class="cost-detail" id="cost-detail" hidden></div>
+  </div>
+</header>
+
+<main>
+  <section class="panel video" aria-label="Live video">
+    <div class="panel-head"><h2>Live video</h2><span id="video-state" class="muted"></span></div>
+    <div class="frame-box"><img id="live-video" alt="Live camera" src="/api/video"><span id="video-empty" class="empty" hidden>No video</span></div>
+    <div class="ptz" id="ptz" aria-label="Camera">
+      <button type="button" data-ptz="left" aria-label="Left">&larr;</button>
+      <button type="button" data-ptz="up" aria-label="Up">&uarr;</button>
+      <button type="button" data-ptz="down" aria-label="Down">&darr;</button>
+      <button type="button" data-ptz="right" aria-label="Right">&rarr;</button>
+      <button type="button" data-ptz="home">Home</button>
+      <button type="button" data-ptz="stop">Stop</button>
+    </div>
+  </section>
+
+  <div class="side">
+  <section class="panel detector" id="detector-panel" aria-label="Detector">
+    <div class="panel-head"><h2>Detector <span class="help" title="Local person detector with zones. It decides who is here; the Judge only runs for costume and motion once the group is on the path.">(?)</span></h2><span id="det-time" class="muted">–</span></div>
+    <div class="frame-box" id="det-box"><img id="det-frame" alt="Detector frame" hidden><span id="det-empty" class="empty">No detector read</span></div>
+    <dl class="det-stats" id="det-stats"></dl>
+  </section>
+
+  <section class="panel judged" id="judge-panel" aria-label="Last Judge read">
+    <div class="panel-head"><h2>Last Judge read <span class="help" title="The most recent read where a gpt Judge actually ran: costume or motion while on the path, or presence while the detector is down.">(?)</span></h2><span id="read-time" class="muted">–</span></div>
+    <div id="judge-none" class="empty-line">No Judge reads yet</div>
+    <div id="judge-body" hidden>
+      <div class="pair" id="frame-pair"></div>
+      <div class="read-meta" id="read-meta"></div>
+      <div id="judge-groups" class="groups"></div>
+      <div id="persons" class="persons"></div>
+    </div>
+  </section>
+  </div>
+
+  <section class="panel sessions" aria-label="Sessions">
+    <div class="panel-head"><h2>Sessions</h2><span id="sessions-count" class="muted"></span></div>
+    <div id="sessions"><p class="empty">No sessions yet</p></div>
+  </section>
+</main>
+
+<footer><span id="voice-backend" title="Voice backend / model"></span><a id="build-version" target="_blank" rel="noopener" hidden></a><a href="/review.html">Review</a></footer>
+<script type="module" src="/app.js"></script>
+<script type="module" src="/overlay.js"></script>
+</body>
+</html>

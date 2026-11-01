@@ -1,0 +1,11 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {createServer,persona,SCENE_PROMPT,makeCostumePrompt} from '../server.mjs';
+
+test('Luna receives the last eight spoken turns, including an explicit no-costume answer',async()=>{
+ const turns=Array.from({length:10},(_,index)=>({role:index%2?'user':'assistant',text:index===9?"I'm not wearing a costume.":`Earlier turn ${index} `+'x'.repeat(400)}));
+ const requests=[];const server=createServer({env:{CAMERA_URL:'rtsp://private:secret@camera/stream2',OPENAI_API_KEY:'test',AUDIO_MODE:'linux'},voiceImpl:{status:()=>({active:true,sessionId:'current-session',transcripts:[]})},transcriptStoreImpl:{readSession:async()=>({turns})},captureImpl:async()=>Buffer.from([255,216,255,217]),fetchImpl:async(url,options)=>{requests.push({url,body:JSON.parse(options.body)});return {ok:true,json:async()=>url.endsWith('/decisions')?{answers:[{name:'real_people_count',type:'choice',choice:'1',confidence:1},{name:'camera_action',type:'choice',choice:'centered',confidence:1},{name:'next_capture_ms',type:'choice',choice:'5000',confidence:1}]}:{output_text:JSON.stringify({people_visible:true,visitor_count:1,audience:'uncertain',costumes:[],props:[],clothing:['vest'],costume_status:'no_evident_costume',description:'A visitor in a vest.',speech_context:'Guest confirmed no costume. Continue talking about candy.'})}};}});
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${server.address().port}`;
+ try{const response=await fetch(base+'/api/scene',{method:'POST',headers:{Origin:base},body:'{}'});assert.equal(response.status,200);const prompt=requests.find(request=>request.url.endsWith('/responses')).body.input[0].content[0].text;assert.doesNotMatch(prompt,/I'm not wearing|Earlier turn|Character and Halloween setting|Porch joke bank/);assert.match(SCENE_PROMPT,/neutral observations/i);const live=makeCostumePrompt({costumes:['pirate','witch','robot','vampire']},turns);assert.match(live,/not in a costume/);assert.doesNotMatch(live,/Earlier turn 0 |Earlier turn 1 |vampire/);assert.match(live,/do not repeat answered questions/i);assert.match(persona,/spoken answers.*override.*vision/i);
+ }finally{await new Promise(r=>server.close(r));}
+});

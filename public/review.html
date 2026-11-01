@@ -1,0 +1,70 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Judge Review</title><link rel="stylesheet" href="/style.css">
+<style>
+.rv{max-width:960px;margin:0 auto;padding:16px}
+.rv-bar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-bottom:12px}
+.rv-bar select,.rv-bar input,.rv-form select,.rv-form input{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:8px;font:inherit;min-width:0}
+.rv-tabs{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.rv-tab{padding:8px 14px;border:1px solid var(--line);border-radius:8px;color:var(--muted);text-decoration:none;font-size:14px}
+.rv-tab.on{border-color:var(--text);color:var(--text)}
+.rv-tab.primary{font-size:17px;font-weight:600;padding:10px 20px;background:var(--panel)}
+.rv-sliders{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted);margin-bottom:10px}
+.rv-sliders label{display:flex;gap:6px;align-items:center}
+.rv-progress{font-size:13px;color:var(--muted);margin-bottom:12px}
+.rv-item{border:2px solid var(--line);border-radius:10px;background:var(--panel);margin-bottom:16px;overflow:hidden}
+.rv-item.cur{border-color:var(--text)}
+.rv-item img{display:block;width:100%;height:auto}
+.rv-imgs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2px}
+.rv-body{padding:12px}
+.rv-meta{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 14px;margin-bottom:8px}
+.rv-big{font-size:22px;font-weight:600}
+.rv-table{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:8px}
+.rv-table td,.rv-table th{padding:4px 6px;text-align:left;border-top:1px solid var(--line)}
+.rv-low{color:var(--orange)}.rv-ok{color:var(--green)}.rv-bad{color:#ff9a86;font-weight:600}.rv-best{font-weight:700}
+.rv-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:12px}
+.rv-form label{display:flex;flex-direction:column;font-size:12px;color:var(--muted);gap:2px}
+.rv-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.rv-actions button{padding:10px 18px;font-size:15px}
+.rv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:12px}
+.rv-thumb{position:relative;border:2px solid var(--line);border-radius:8px;overflow:hidden;cursor:pointer;background:var(--panel);padding:0}
+.rv-thumb img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.rv-thumb span{position:absolute;left:4px;bottom:4px;background:#000a;color:#fff;font-size:11px;padding:1px 5px;border-radius:4px}
+.rv-thumb.flip{border-color:#ff9a86;opacity:.7}
+.rv-pager{display:flex;gap:8px;justify-content:center;align-items:center}
+details summary{cursor:pointer;color:var(--muted);font-size:13px}
+
+.fs{position:fixed;inset:0;z-index:100;background:#000;display:flex;flex-direction:column;touch-action:pan-y}
+.fs[hidden]{display:none}
+.fs-imgs{flex:1;min-height:0;display:flex;gap:2px;align-items:center;justify-content:center}
+.fs-imgs img{flex:1 1 0;min-width:0;width:100%;height:100%;object-fit:contain}
+.fs-hud{position:absolute;top:8px;left:8px;background:#000b;color:#fff;font:13px/1.35 var(--sans);padding:6px 10px;border-radius:6px;font-variant-numeric:tabular-nums;pointer-events:none}
+.fs-flash{position:absolute;top:8px;right:8px;min-width:6ch;text-align:center;background:var(--green);color:#000;font:700 22px/1 var(--sans);padding:10px 14px;border-radius:8px;opacity:0;transition:opacity .25s;pointer-events:none}
+.fs-flash.on{opacity:1;transition:none}
+.fs-bar{display:flex;gap:8px;padding:8px;background:#000}
+.fs-bar button{flex:1;padding:16px 8px;font-size:20px;font-weight:700;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--text)}
+.fs-bar .yes{background:#2f5a2a}.fs-bar .no{background:#5a2a2a}.fs-bar .sm{flex:.5;font-size:15px;font-weight:500}
+</style></head><body><main class="rv">
+<div class="rv-bar"><a href="/">Back</a><span id="total"></span>
+<select id="source"><option value="">All sources</option><option value="judge">Judge log</option><option value="capture">Capture clips</option></select>
+<input id="from" type="date" title="From"><input id="to" type="date" title="To">
+<label><input id="showlabeled" type="checkbox"> show labeled</label>
+<label><input id="visits" type="checkbox"> one per visit</label>
+<button id="gofs">Full screen</button>
+<select id="ai"><option value="">AI: any</option><option value="agree">AI agrees with Judge</option><option value="disagree">AI disagrees with Judge</option><option value="none">No AI label</option></select>
+<select id="hva"><option value="">You vs AI: any</option><option value="agree">You agree with AI</option><option value="disagree">You disagree with AI</option></select>
+<select id="cause"><option value="">Cause: any</option></select>
+<select id="sort"><option value="">Sort: nearest cutoff</option><option value="ai_disagree">Sort: AI disagrees first</option></select>
+<label><input id="prov" type="checkbox"> AI as provisional truth</label></div>
+<div class="rv-progress" id="aisum"></div>
+<nav class="rv-tabs" id="tabs"></nav>
+<div class="rv-sliders">
+<label>People at <input id="high" type="range" min="0.5" max="1" step="0.01"><b id="highv"></b></label>
+<label>No people at <input id="low" type="range" min="0" max="0.5" step="0.01"><b id="lowv"></b></label>
+<span title="p_people = 1 minus the probability of the answer 0 (no people), from the Presence judge's top-3 choices. If 0 is not in the top 3, the sum of the top-3 probabilities is used (a lower bound). Uncertain or errored reads, and reads where the local detector disagrees, are Borderline. Borderline is sorted by distance from the 0.75 people cutoff.">(?)</span></div>
+<div class="rv-progress" id="progress"></div>
+<div id="finder"></div>
+<div id="list"></div>
+<div class="rv-actions" id="extra"></div>
+<div class="rv-pager"><button id="prev">Prev</button><span id="page"></span><button id="next">Next</button></div>
+</main>
+<div class="fs" id="fs" hidden><div class="fs-imgs" id="fsimgs"></div><div class="fs-hud" id="fshud"></div><div class="fs-flash" id="fsflash"></div>
+<div class="fs-bar"><button class="sm" id="fsgrid">Grid</button><button class="sm" id="fsprev">Prev</button><button class="no" id="fsno">No</button><button class="sm" id="fsunsure">Unsure</button><button class="yes" id="fsyes">Yes</button><button class="sm" id="fsnext">Next</button></div></div><script type="module" src="/review.js"></script></body></html>

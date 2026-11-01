@@ -1,0 +1,45 @@
+.env
+.env.*
+!.env.example
+node_modules/
+*.log
+private/
+
+data/transcripts/
+
+data/camera-home.json
+/data/events/
+
+# Private Judge read log (real camera images + labels): never commit
+/data/judge-log/
+data/judge-log/
+
+# Porch session history (transcript refs, timelines)
+/data/sessions/
+data/sessions/
+
+# Cost accounting totals (private usage data)
+/data/costs/
+
+# App mode state (override persisted by /api/mode)
+/data/mode.json
+
+# Replayable capture clips + replay results (real camera images, possibly children): NEVER commit
+/data/captures/
+data/captures/
+
+*.onnx
+*.npy
+
+# Person detector experiment: weights, venv, site zones. Never commit.
+detector/models/
+detector/.venv/
+detector/__pycache__/
+/data/detector-zones.json
+
+# Visit clips (children on camera; private)
+/data/visits/
+data/visits/
+
+# Everything the app writes at runtime (camera frames, clips, labels, faces) stays private
+/data/

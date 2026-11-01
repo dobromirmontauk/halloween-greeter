@@ -1,0 +1,25 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Detector zones</title><link rel="stylesheet" href="/style.css">
+<style>
+.zn{max-width:1000px;margin:0 auto;padding:16px;display:grid;gap:12px}
+.zn-stage{position:relative;aspect-ratio:16/9;background:#0a0806;border-radius:8px;overflow:hidden}
+.zn-stage img,.zn-stage canvas{position:absolute;inset:0;width:100%;height:100%}
+.zn-stage img{object-fit:contain}
+.zn-stage canvas{cursor:crosshair;touch-action:none}
+.zn-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.zn select,.zn input[type=text]{background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:8px;font:inherit;min-width:0}
+.zn ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.zn li{display:flex;gap:8px;align-items:center;border-top:1px solid var(--line);padding:4px 0}
+.zn li span{flex:1}
+</style></head><body><main class="zn">
+<h1>Detector zones</h1>
+<div class="zn-stage"><img id="zn-img" alt="Latest camera frame"><canvas id="zn-canvas"></canvas></div>
+<div class="zn-row">
+  <select id="zn-kind"><option>sidewalk</option><option>path</option><option>porch</option><option>ignore</option></select>
+  <input id="zn-name" type="text" maxlength="40" placeholder="name">
+  <button id="zn-close" type="button">Finish polygon</button>
+  <button id="zn-undo" type="button">Undo point</button>
+  <button id="zn-frame" type="button">New frame</button>
+</div>
+<ul id="zn-list"></ul>
+<div class="zn-row"><button id="zn-save" type="button">Save zones</button><button id="zn-reload" type="button">Reload saved</button><span id="zn-msg"></span></div>
+</main><script type="module" src="/zones.js"></script></body></html>

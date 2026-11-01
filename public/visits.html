@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Visits</title>
+<style>
+:root{color-scheme:dark;--bg:#14161a;--fg:#e8eaed;--mut:#8b929c;--line:#2a2e35;--empty:#3a3f48;--sidewalk:#4dabf7;--path:#3ddc84;--costume:#ffd43b;--motion:#b197fc;--err:#ff6b6b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px system-ui,sans-serif;display:grid;grid-template-columns:320px 1fr;min-height:100vh}
+@media(max-width:800px){body{grid-template-columns:1fr}}
+#list{border-right:1px solid var(--line);overflow:auto;max-height:100vh}
+#list button{display:grid;grid-template-columns:1fr auto;gap:2px 8px;width:100%;text-align:left;background:none;color:inherit;border:0;border-bottom:1px solid var(--line);padding:8px 12px;font:inherit;cursor:pointer}
+#list button[aria-current=true]{background:#20242b}
+.mut{color:var(--mut);font-size:12px}.tag{font-size:11px;padding:1px 6px;border-radius:8px;color:#111}
+.EMPTY{background:var(--empty);color:var(--fg)}.SIDEWALK{background:var(--sidewalk)}.PATH{background:var(--path)}
+main{padding:12px;min-width:0}#box{position:relative;max-width:960px}video{width:100%;display:block;background:#000}canvas{position:absolute;left:0;top:0;pointer-events:none}
+#tl{position:relative;max-width:960px;margin-top:8px;display:grid;grid-template-columns:64px 1fr;gap:3px 8px;align-items:center}
+.lab{color:var(--mut);font-size:12px}.trk{position:relative;height:22px;background:#1b1e24;border-radius:3px;overflow:hidden;cursor:pointer}
+.trk.tall{height:30px}.seg{position:absolute;top:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#111;overflow:hidden}
+.seg.EMPTY{color:var(--fg)}.cnt{background:#2d333b;color:var(--fg);border-left:1px solid var(--bg)}
+.mk{min-width:6px;position:absolute;top:0;bottom:0;border:0;padding:0 0 0 4px;background:none;color:var(--fg);font:11px system-ui;white-space:nowrap;cursor:pointer;border-left:2px solid var(--costume);text-align:left}
+.mk.motion{border-color:var(--motion)}.mk.error{border-color:var(--err);color:var(--err)}.mk.state{border-color:var(--fg)}
+.seg.cos{background:#3b3516;color:var(--costume);border-left:1px solid var(--bg)}.seg.cos.none{background:#2d333b;color:var(--mut)}.seg.mot{background:#2e2848;color:#d0bfff;border-left:1px solid var(--bg)}.seg{white-space:nowrap;padding:0 4px}
+#mode{margin-top:8px;margin-right:8px;background:none;color:var(--mut);border:1px solid var(--line);border-radius:4px;font:12px system-ui;padding:3px 8px;cursor:pointer}
+.seg.say{background:#16363b;color:#8ce3ee;border-left:1px solid var(--bg)}.seg.hear{background:#3b2a16;color:#ffb866;top:60%;border-left:1px solid var(--bg);font-size:10px}.mk.sp{border-color:#8ce3ee;color:#8ce3ee;top:0;bottom:auto;height:11px;font-size:9px;z-index:2}.mk.sp.first{border-color:#fff;color:#fff;font-weight:700}.mk.sp.sent{border-color:var(--costume);color:var(--costume)}
+.mk.sp.inform{opacity:.4;height:6px;width:3px;min-width:3px;padding:0;border-color:#8ce3ee}.mk.sp.nudge{border-color:#ff7a59;color:#ff7a59;font-weight:700;padding:0 2px;min-width:6px;white-space:nowrap}.mk.sp.nudge.n-silence{border-color:#d28bff;color:#d28bff}.seg.vis{background:#3a1f3b;color:#f2a6f5;top:60%;border-left:1px solid var(--bg);font-size:10px}#l-speech{line-height:1.1;font-size:11px}
+.tail{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(45deg,#0000,#0000 4px,#ffffff10 4px,#ffffff10 8px)}
+#head{position:absolute;top:0;bottom:0;width:2px;background:#fff;pointer-events:none;z-index:3}
+#heads{position:relative;grid-column:2;grid-row:1 / span 5;pointer-events:none}
+#now{margin-top:8px;font-size:15px}#info{margin-top:2px}#del{margin-top:10px}
+#audbox{margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}select,input[type=number]{background:#1b1e24;color:var(--fg);border:1px solid var(--line);border-radius:4px;font:12px system-ui;padding:3px 6px}
+.seg.tx{border-left:1px solid var(--bg);font-size:11px}.seg.tx.assistant{background:#16363b;color:#8ce3ee}.seg.tx.user{background:#3b2a16;color:#ffb866}.lvl{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#runs,#xp{max-width:960px;margin-top:14px}#runs h3,#xp h3{font-size:13px;margin:0 0 6px;color:var(--mut);font-weight:600}
+.run{display:flex;gap:8px;align-items:center;padding:3px 0;border-bottom:1px solid var(--line);font-size:12px}.run label{display:flex;gap:6px;align-items:center;cursor:pointer}
+#rpform{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}#rp-status{font-size:12px;color:var(--mut)}#rp-go{background:#20242b;color:var(--fg);border:1px solid var(--line);border-radius:4px;padding:3px 10px;font:12px system-ui;cursor:pointer}
+#xp .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}.xcol{min-width:0}.xcol h4{margin:0 0 4px;font-size:12px;color:var(--mut);font-weight:600}
+.turn{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);color:var(--fg);font:12px/1.35 system-ui;padding:3px 0;cursor:pointer}.turn b{font-weight:600;margin-right:6px}.turn.assistant b{color:#8ce3ee}.turn.user b{color:#ffb866}.turn .tm{color:var(--mut);margin-right:6px}
+#q{cursor:help;border:1px solid var(--mut);border-radius:50%;padding:0 5px;font-size:11px;color:var(--mut);margin-left:6px}
+</style></head><body>
+<nav id="list" aria-label="Visits"></nav>
+<main><div id="box"><video id="v" controls muted playsinline></video><canvas id="c" aria-hidden="true"></canvas></div>
+<div id="now"><span id="nowtxt"></span><span id="q" title="Default view replays the saved per-frame boxes through the current tracker; the toggle shows the timelines as recorded. Timeline spans the capture window (wall time); the hatched part after the video ends is the tail where only the tracker was followed. State, count and costume shown are for the playhead. Click a track or marker to seek; left/right jump between events; space plays or pauses. Solid boxes are counted people; dashed are ignored, static or weak.">?</span></div>
+<div id="tl" aria-label="Timeline">
+ <span class="lab">State</span><div class="trk" id="t-state"></div>
+ <span class="lab">People</span><div class="trk tall" id="t-people"></div>
+ <span class="lab" id="l-dir" hidden>Motion</span><div class="trk" id="t-dir" hidden></div>
+ <span class="lab">Costume</span><div class="trk" id="t-costume"></div>
+ <span class="lab" id="l-speech" hidden>Speech</span><div class="trk" id="t-speech" hidden></div>
+ <span class="lab" id="l-vis" hidden>Visitor (sim)</span><div class="trk" id="t-vis" hidden></div>
+ <span class="lab" id="l-mic" hidden>Mic</span><div class="trk" id="t-mic" hidden></div>
+ <span class="lab" id="l-asst" hidden>Voice</span><div class="trk" id="t-asst" hidden></div>
+ <span class="lab" id="l-tx" hidden>Words</span><div class="trk" id="t-tx" hidden></div>
+ <span class="lab">Events</span><div class="trk" id="t-events"></div>
+</div>
+<div id="audbox" hidden><span class="lab">Audio</span><select id="aud" aria-label="Audio"><option value="none">off</option><option value="mic">mic</option><option value="assistant">assistant</option><option value="both">both</option></select><select id="aud-run" aria-label="Assistant source"><option value="">original</option></select></div>
+<section id="runs"><h3>Runs <span id="q2" class="mut" style="cursor:help" title="Replays send this clip through the real pipeline with the chosen voice backend. Pick up to two runs to add their Speech and Words rows under the original and to hear their voice with the video. Real backends send the recorded video and voices to Google or OpenAI: confirm first. Replays only start while the yard is empty.">(?)</span></h3>
+ <div id="runlist"></div>
+ <div id="rpform"><select id="rp-backend" aria-label="Backend"><option value="fake">fake</option><option value="gemini">gemini</option><option value="openai">openai</option></select>
+  <select id="rp-judges" aria-label="Judges"><option value="recorded">judges recorded</option><option value="fake">judges fake</option><option value="real">judges real</option></select>
+  <label id="rp-cl" hidden><input type="checkbox" id="rp-confirm"> <span id="rp-ct"></span></label>
+  <label class="mut">cap $<input type="number" id="rp-cost" min="0" step="0.05" value="0.5" style="width:64px"></label>
+  <button id="rp-go" type="button">Replay</button><span id="rp-status"></span></div></section>
+<section id="xp" hidden><h3>Transcript</h3><div class="cols" id="xcols"></div></section>
+<div id="info" class="mut"></div><button id="mode" type="button" hidden>Replayed with current tracker</button><button id="del" type="button" hidden>Delete</button></main>
+<script src="/visits.js" type="module"></script></body></html>
