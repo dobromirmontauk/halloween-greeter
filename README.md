@@ -34,6 +34,8 @@ And when asked to sing:
 > No gown or tiara, just a cozy knit sweater,<br>
 > But for candy and heckles, there's no one better!
 
+Full back-and-forth conversations (both sides, anonymous) are in [docs/HALLOWEEN-2026.md](docs/HALLOWEEN-2026.md).
+
 ## Quick start
 
 Node 22+, ffmpeg, PipeWire CLI tools (`pw-play`, `pw-record`), Python 3 for the detector (see docs/DEPLOYMENT.md "Person detector").
