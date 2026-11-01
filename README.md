@@ -2,16 +2,37 @@
 
 A talking Halloween porch greeter. A network IP camera watches the front yard; when trick-or-treaters walk up, "Cornelius", the ghost of an old-time banjo player who haunts the porch, greets them through a speaker, roasts their costumes and chats with them live. Built for one house's Halloween 2026 in a week, shared as-is.
 
+![The dashboard: mode switch (Off / On / Data capture), heckling and scream toggles, schedule override, daily cost, live camera with detector zones (pixelated here), detector and judge panels, sessions](docs/img/dashboard.png)
+
 **What it does**
 
 - **Local person detection** (YOLOX-tiny in a Python sidecar, on the box): sidewalk / path / porch zones you draw on the camera image, ignore zones for props, a lightweight motion tracker (arriving / present / leaving, group counts). No identity, no face recognition.
-- **Live voice** via Gemini Live (`VOICE_BACKEND=gemini`, recommended; `GEMINI_MODE=all-gemini`) or OpenAI GPT-Live. The character lives in `prompts/world-gemini.md`; the code only sends short stage cues ("someone is walking up the path", "they're at the porch now") and queues them so she is never cut off mid-sentence.
+- **Live voice** via Gemini Live (`VOICE_BACKEND=gemini`, recommended; `GEMINI_MODE=all-gemini`) or OpenAI GPT-Live. The character lives in `prompts/world-gemini.md`; the code only sends short stage cues ("someone is walking up the path", "they're at the porch now") and queues them so he is never cut off mid-sentence.
 - **PTZ framing** over ONVIF (bounded pulses, saved home position).
 - **Dashboard** on port 3031: live video with detector boxes, mode switch and daily schedule, sessions, costs, plus `/visits.html` (recorded visit clips with a speech timeline), `/zones.html` (draw zones), `/review.html` (label reads).
 - **Visit clips and a replay harness**: every visit can be recorded (video + optional audio + timeline) and replayed through the real pipeline against a real or fake voice backend to test prompt and timing changes.
 - Optional **sidewalk scream** (`scripts/scream/generate.mjs` renders TTS clips; `SCREAM=on`).
 
 **Hardware it ran on**: a small Ubuntu 24.04 box, a TP-Link Tapo C520WS pan/tilt camera (RTSP + ONVIF), a USB speakerphone (Revolabs FLX UC 500) through PipeWire. Any RTSP camera works for watching; aiming needs ONVIF PTZ.
+
+**Heard on Halloween night** (Cornelius's side only, from the 2026 transcripts; he blames his skeleton crew, Gus on the ladder, Lefty and Hedley, who are porch props):
+
+> No costume? Bold choice. You've come as a person who thinks the candy is unconditional.
+
+> A princess in a red sweater? My, the royal budget must be tight this year! Did you leave the tiara and the gown at the castle? Take a piece of candy, Your Highness!
+
+> Clif Bars? Trying to stay in shape for haunting season, are we? My crew has no guts, so they can't digest that health food anyway.
+
+> Skeleton Man? I've got more backbone than my whole crew combined! Take your candy and clear out before Gus drops on your head.
+
+> A Grinch and a mouse, looks like a cartoon convention gone wrong!
+
+And when asked to sing:
+
+> A princess in red, but without her crown,<br>
+> The fairest royal to haunt this town.<br>
+> No gown or tiara, just a cozy knit sweater,<br>
+> But for candy and heckles, there's no one better!
 
 ## Quick start
 
